@@ -54,7 +54,23 @@ MIDDLEWARE = [
 ]
 
 # hey that's dangerous, don't do this in production
-CORS_ORIGIN_ALLOW_ALL = True 
+# CORS_ORIGIN_ALLOW_ALL = True 
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+] # If this is used, then not need to use `CORS_ORIGIN_ALLOW_ALL = True`
+CORS_ORIGIN_REGEX_WHITELIST = [
+    'http://localhost:3000',
+]
+
+CSRF_TRUSTED_ORIGINS = ['localhost:3000']
+
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+# SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SAMESITE = None
+# CSRF_COOKIE_SAMESITE = None
+CSRF_COOKIE_SECURE = False
 
 ROOT_URLCONF = 'backend.urls'
 
