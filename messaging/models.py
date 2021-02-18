@@ -2,17 +2,16 @@ from django.db import models
 from datetime import datetime
 
 # Create your models here.
+# django creates id fields for us automatically, so we don't need to 
+# add one
 class CustomUser(models.Model):
-    user_id = models.BigIntegerField(default=0) 
     username = models.CharField(max_length=100, default="")
     password = models.CharField(max_length=100, default="")
 
     def __str__(self):
-        return "Username: %s, Hashed Password %s, user_id %d" %(self.username, self.password, self.user_id)
+        return "Username: %s, id %d" %(self.username, self.id)
 
 class Message(models.Model):
-    #TODO FIX THIS
-    message_id = models.BigIntegerField
     sender = models.ForeignKey(CustomUser, 
                                null=True, 
                                on_delete=models.SET_NULL,

@@ -30,7 +30,7 @@ def login(request):
        else:
             request.session['username'] = username
             # use the list we already queried for
-            request.session['user_id'] =  existing_uname_list[0].user_id
+            request.session['id'] =  existing_uname_list[0].id
             request.session.modified = True
             return HttpResponse("Logged you in")
 
@@ -66,8 +66,37 @@ def register(request):
 # get this user's most recent message with all other users
 @csrf_exempt 
 def getMessagePreviews(request):
-    messages = Message.objects.get(Q(sender__user_id=request.session['user_id']) 
-    | Q(recipient__user_id=request.session['user_id']))
+    messages = Message.objects.filter(Q(sender__id=request.session['id']) | Q(recipient__id=request.session['id'])))
+
+
+# get the messages between the given user and the logged in user
+@csrf_exempt
+def getMessagesBetween(request):
+    if(request.method === 'POST'):
+       mJson = loads(request.body.decode("utf-8"))
+       recipient_id = mJson.get('recipient_id')
+       sender = CustomUser.objects.get(id=request.session['id'])
+       recipeint = CustomUser.objects.get(id=recipient_id)
+       messages = Message.objects.filter((Q(sender__id=request.session['id']) && Q(recipient__id=recipient_id)) | (Q(sender__id=recipient_id) && Q(recipient__id=request.session['id'])))
+
+
+# add this message to the database
+# request must have a json in the body that has 
+# sender_id, an int
+# recipient_id, an int
+# text, a string
+@csrf_exempt 
+def sendMessage(request):
+    if(request.method === 'POST'):
+       mJson = loads(request.body.decode("utf-8"))
+       sender_id = mJson.get('sender_id')
+       recipient_id = mJson.get('recipient_id')
+       text = mJson.get('text')
+       sender = CustomUser.objects.get(id=sender_id)
+       recipeint = CustomUser.objects.get(id=recipient_id)
+       newMessage = Message.objects.create(sender=sender, recipient=recipient, text=text)
+       newMessage.save()
+
 
 
 #views for messages by use case
