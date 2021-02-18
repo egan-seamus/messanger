@@ -10,7 +10,9 @@ from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from json import loads
 from .models import CustomUser
+from .models import Message
 from django.contrib.auth import hashers
+from django.db.models import Q
 
 @csrf_exempt
 def login(request):
@@ -27,6 +29,8 @@ def login(request):
            return HttpResponseBadRequest("incorrect password")
        else:
             request.session['username'] = username
+            # use the list we already queried for
+            request.session['user_id'] =  existing_uname_list[0].user_id
             request.session.modified = True
             return HttpResponse("Logged you in")
 
@@ -42,7 +46,7 @@ def authenticate(request):
     else:
         return HttpResponseBadRequest()
 
-# @csrf_exempt 
+@csrf_exempt 
 def register(request):
     if request.method == 'POST':
        mJson = loads(request.body.decode("utf-8"))
@@ -58,6 +62,13 @@ def register(request):
 
     else:
         return HttpResponseBadRequest("Missing username or password")
+
+# get this user's most recent message with all other users
+@csrf_exempt 
+def getMessagePreviews(request):
+    messages = Message.objects.get(Q(sender__user_id=request.session['user_id']) 
+    | Q(recipient__user_id=request.session['user_id']))
+
 
 #views for messages by use case
 #let THIS = logged in user
