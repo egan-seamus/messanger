@@ -99,7 +99,7 @@ def getMessagePreviews(request):
     # allAccepted = Message.objects.filter(recipient__id=request.session.['id']).order_by('timestamp')
 
 # get the messages between the given user and the logged in user
-@ csrf_exempt
+@csrf_exempt
 def getMessagesBetween(request):
     if(request.method == 'POST'):
         try:
@@ -118,12 +118,14 @@ def getMessagesBetween(request):
 
 
 
+
+
 # add this message to the database
 # request must have a json in the body that has
 # sender_id, an int
 # recipient_id, an int
 # text, a string
-@ csrf_exempt
+@csrf_exempt
 def sendMessage(request):
     if(request.method == 'POST'):
        mJson = loads(request.body.decode("utf-8"))
@@ -137,6 +139,15 @@ def sendMessage(request):
        newMessage.save()
 
 
+@csrf_exempt 
+def searchForUser(request):
+    if(request.method == 'POST'):
+       mJson = loads(request.body.decode("utf-8"))
+       query = mJson.get('query')
+       results = CustomUser.objects.filter(username__startswith=query)
+       jason = serializers.serialize("json", results)
+       wrapper = {"results", jason}
+       return JsonResponse(wrapper)
 
 # views for messages by use case
 # let THIS = logged in user
