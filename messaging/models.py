@@ -22,3 +22,6 @@ class Message(models.Model):
                                   related_name="recipient")
     text = models.CharField(max_length=5000, default="")
     timestamp = models.DateTimeField(default=datetime.fromisoformat('1970-01-01'))
+
+    def isFromSameConversation(self, other):
+        return ((self.sender == other.sender and self.recipient == other.recipient) or (self.recipient == other.sender and self.sender == other.recipient))
