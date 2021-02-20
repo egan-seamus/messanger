@@ -8,7 +8,7 @@ from django.http import HttpResponseBadRequest
 from django.http import HttpResponseServerError
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
-from json import loads
+from json import loads, dumps
 from .models import CustomUser
 from .models import Message
 from django.contrib.auth import hashers
@@ -86,15 +86,24 @@ def getMessagePreviews(request):
     # append the usernames on to the messages
     parentList = []
     for uniqueMessage in uniqueMessages:
-        username = Message.sender.id if request.session['id'] != Message.sender.id else Message.recipient.id
-        parentList.append {
+        username = uniqueMessage.sender.username if request.session['id'] != uniqueMessage.sender.id else uniqueMessage.recipient.username
+        parentList.append( {
             "username" : username,
-            "message" : uniqueMessage
-        }
+            "sender_id" : uniqueMessage.sender.id,
+            "recipient_id" : uniqueMessage.recipient.id,
+            "date" : str(uniqueMessage.timestamp),
+            "message" : uniqueMessage.text
+        })
+    #jason = dumps(parentList)
+    return JsonResponse(parentList, safe=False)
 
-    jason = serializers.serialize("json", parentList);
-    wrapper = {"MessageJSON", jason}
-    return JsonResponse(wrapper)
+@csrf_exempt 
+def getMyId(request):
+    try:
+        id = request.session['id']
+        return JsonResponse({'id' : id})
+    except:
+        return HttpResponseBadRequest()
 
     # allAccepted = Message.objects.filter(recipient__id=request.session.['id']).order_by('timestamp')
 
@@ -110,9 +119,16 @@ def getMessagesBetween(request):
             messages = Message.objects.filter(
                 (Q(sender__id=request.session['id']) & Q(recipient__id=recipient_id)) 
                 | (Q(sender__id=recipient_id) & Q(recipient__id=request.session['id'])))
-            jason = serializers.serialize("json", messages);
-            wrapper = {"MessageJSON", jason}
-            return JsonResponse(wrapper)
+            orderedMessages = messages.order_by('timestamp')
+            parentList = []
+            for message in orderedMessages:
+                parentList.append( {
+                    "sender_id" : message.sender.id,
+                    "recipient_id" : message.recipient.id,
+                    "date" : str(message.timestamp),
+                    "message" : message.text
+        })
+            return JsonResponse(parentList, safe=False)
         except:
             return HttpResponseBadRequest()
 

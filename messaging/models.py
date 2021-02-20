@@ -25,3 +25,6 @@ class Message(models.Model):
 
     def isFromSameConversation(self, other):
         return ((self.sender == other.sender and self.recipient == other.recipient) or (self.recipient == other.sender and self.sender == other.recipient))
+
+    def __str__(self):
+        return "Message from %s to %s: %s" %(self.sender.username, self.recipient.username, self.text)
