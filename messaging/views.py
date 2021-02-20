@@ -161,9 +161,13 @@ def searchForUser(request):
        mJson = loads(request.body.decode("utf-8"))
        query = mJson.get('query')
        results = CustomUser.objects.filter(username__startswith=query)
-       jason = serializers.serialize("json", results)
-       wrapper = {"results", jason}
-       return JsonResponse(wrapper)
+       response = []
+       for result in results:
+           response.append({
+               "id" : result.id,
+               "username" : result.username
+           })
+       return JsonResponse(response, safe=False)
 
 # views for messages by use case
 # let THIS = logged in user
