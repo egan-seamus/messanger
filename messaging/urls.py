@@ -10,5 +10,6 @@ urlpatterns = [
     path('conversation/', views.getMessagesBetween, name='conversation'),
     path('search/', views.searchForUser, name='search'),
     path('id/', views.getMyId, name='id'),
+    path('send/', views.sendMessage, name='sendMessage'),
     path('csrf/', views.csrf),
 ]
