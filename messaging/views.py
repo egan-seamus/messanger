@@ -112,6 +112,16 @@ def getMyId(request):
 
 # get the messages between the given user and the logged in user
 
+@csrf_exempt 
+def getUsernameFromID(request):
+    try:
+        mJson = loads(request.body.decode("utf-8"))
+        mID = mJson.get('id')
+        user = CustomUser.objects.get(id=mID)
+        name = user.username 
+        return JsonResponse({'username' : name})
+    except:
+        return HttpResponseBadRequest()
 
 @csrf_exempt
 def getMessagesBetween(request):

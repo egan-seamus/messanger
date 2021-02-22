@@ -11,5 +11,6 @@ urlpatterns = [
     path('search/', views.searchForUser, name='search'),
     path('id/', views.getMyId, name='id'),
     path('send/', views.sendMessage, name='sendMessage'),
+    path('usernamefromid/', views.getUsernameFromID, name='usernameFromID'),
     path('csrf/', views.csrf),
 ]
