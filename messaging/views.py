@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 # Create your views here.
 
@@ -18,6 +18,7 @@ from datetime import datetime
 
 
 @csrf_exempt
+
 def login(request):
     if request.method == 'POST':
         request.session.set_test_cookie()
@@ -43,7 +44,8 @@ def login(request):
 # check if a user is alredy logged in
 
 
-@csrf_exempt
+# @csrf_exempt
+
 def authenticate(request):
     if request.session.has_key('username'):
         reply_message = request.session.get('username')
@@ -53,6 +55,7 @@ def authenticate(request):
 
 
 @csrf_exempt
+
 def register(request):
     if request.method == 'POST':
         mJson = loads(request.body.decode("utf-8"))
@@ -70,7 +73,8 @@ def register(request):
         return HttpResponseBadRequest("Missing username or password")
 
 # get this user's most recent message with all other users
-@csrf_exempt
+# @csrf_exempt
+
 def getMessagePreviews(request):
     messages = Message.objects.filter(
         Q(sender__id=request.session['id']) | Q(recipient__id=request.session['id']))
@@ -100,7 +104,8 @@ def getMessagePreviews(request):
     return JsonResponse(parentList, safe=False)
 
 
-@csrf_exempt
+# @csrf_exempt
+
 def getMyId(request):
     try:
         id = request.session['id']
@@ -112,7 +117,8 @@ def getMyId(request):
 
 # get the messages between the given user and the logged in user
 
-@csrf_exempt 
+# @csrf_exempt 
+
 def getUsernameFromID(request):
     try:
         mJson = loads(request.body.decode("utf-8"))
@@ -123,7 +129,8 @@ def getUsernameFromID(request):
     except:
         return HttpResponseBadRequest()
 
-@csrf_exempt
+# @csrf_exempt
+
 def getMessagesBetween(request):
     if(request.method == 'POST'):
         try:
@@ -172,7 +179,7 @@ def sendMessage(request):
             return HttpResponseBadRequest()
 
 
-@csrf_exempt
+
 def searchForUser(request):
     if(request.method == 'POST'):
         mJson = loads(request.body.decode("utf-8"))
